@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>my first website</title>
+</head>
+
+<body style="text-align:center;" onclick="changeColor()">
+
+    <h3>my first website</h3>
+    <p>hello!</p>
+    <button>just do it</button>
+
+    <h1>点我屏幕变色</h1>
+
+    <button onclick="document.getElementById('box').style.display='block'">
+        显示盒子
+    </button>
+    <div id="box" style="display:none;">我是隐藏内容</div>
+
+    <script>
+        function changeColor() {
+            document.body.style.background='#'+Math.random().toString(16).substr(2,6);
+        }
+    </script>
+
+</body>
+</html>
