@@ -23,6 +23,57 @@
             document.body.style.background='#'+Math.random().toString(16).substr(2,6);
         }
     </script>
+<script>
+const canvas = document.createElement('canvas');
+canvas.style.position = 'fixed';
+canvas.style.top = '0';
+canvas.style.left = '0';
+canvas.style.pointerEvents = 'none';
+canvas.style.zIndex = '9999';
+document.body.appendChild(canvas);
 
+const ctx = canvas.getContext('2d');
+let stars = [];
+let mouseX = 0, mouseY = 0;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  stars.push({
+    x: mouseX,
+    y: mouseY,
+    size: Math.random() * 3 + 1,
+    speedX: (Math.random() - 0.5) * 2,
+    speedY: (Math.random() - 0.5) * 2,
+    color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+    life: 1
+  });
+});
+
+function animateStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars = stars.filter(star => {
+    star.x += star.speedX;
+    star.y += star.speedY;
+    star.size *= 0.98;
+    star.life -= 0.02;
+    if (star.life <= 0) return false;
+    ctx.beginPath();
+    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+    ctx.fillStyle = star.color;
+    ctx.fill();
+    return true;
+  });
+  requestAnimationFrame(animateStars);
+}
+animateStars();
+</script>
 </body>
 </html>
