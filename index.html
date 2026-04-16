@@ -1,79 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>my first website</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{min-height:100vh;background:linear-gradient(135deg,#667eea,#764ba2);padding-top:70px}
+.navbar{position:fixed;top:0;width:100%;background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);padding:18px;text-align:center;z-index:100}
+.navbar a{margin:0 20px;text-decoration:none;color:#222;font-weight:bold}
+.card{background:rgba(255,255,255,0.92);width:380px;margin:40px auto;padding:30px;border-radius:20px;text-align:center}
+input,button{width:90%;padding:12px;margin:6px 0;border:none;border-radius:12px}
+button{background:#667eea;color:white;font-weight:bold;cursor:pointer}
+#messages{margin-top:20px}
+.msg{background:#f3f4f6;padding:10px;margin:6px 0;border-radius:10px;text-align:left}
+#canvas{position:fixed;top:0;left:0;z-index:-1}
+</style>
 </head>
+<body>
 
-<body style="text-align:center;" onclick="changeColor()">
+<div class="navbar">
+<a href="#">Home</a>
+<a href="#">Profile</a>
+<a href="#">Messages</a>
+<a href="#">Settings</a>
+</div>
 
-    <h3>my first website</h3>
-    <p>hello!</p>
-    <button>just do it</button>
+<div class="card">
+<h3>Message Board</h3>
+<input id="input" placeholder="Your message...">
+<button onclick="sendMsg()">Send</button>
+<div id="messages"></div>
+</div>
 
-    <h1>点我屏幕变色</h1>
+<canvas id="canvas"></canvas>
 
-    <button onclick="document.getElementById('box').style.display='block'">
-        显示盒子
-    </button>
-    <div id="box" style="display:none;">我是隐藏内容</div>
-
-    <script>
-        function changeColor() {
-            document.body.style.background='#'+Math.random().toString(16).substr(2,6);
-        }
-    </script>
 <script>
-const canvas = document.createElement('canvas');
-canvas.style.position = 'fixed';
-canvas.style.top = '0';
-canvas.style.left = '0';
-canvas.style.pointerEvents = 'none';
-canvas.style.zIndex = '9999';
-document.body.appendChild(canvas);
+const ctx=document.getElementById("canvas").getContext("2d");
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resize();window.addEventListener("resize",resize);
+let particles=[];
+document.addEventListener("mousemove",(e)=>{particles.push({x:e.x,y:e.y,r:Math.random()*2+1})});
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle="rgba(255,255,255,0.7)";ctx.fill();p.r*=0.97;if(p.r<0.5)particles.splice(i,1)});requestAnimationFrame(draw)}
+draw();
 
-const ctx = canvas.getContext('2d');
-let stars = [];
-let mouseX = 0, mouseY = 0;
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+function sendMsg(){
+let val=document.getElementById("input").value;
+if(!val)return;
+let div=document.createElement("div");
+div.className="msg";
+div.innerText=val;
+document.getElementById("messages").appendChild(div);
+document.getElementById("input").value="";
 }
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  stars.push({
-    x: mouseX,
-    y: mouseY,
-    size: Math.random() * 3 + 1,
-    speedX: (Math.random() - 0.5) * 2,
-    speedY: (Math.random() - 0.5) * 2,
-    color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-    life: 1
-  });
-});
-
-function animateStars() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  stars = stars.filter(star => {
-    star.x += star.speedX;
-    star.y += star.speedY;
-    star.size *= 0.98;
-    star.life -= 0.02;
-    if (star.life <= 0) return false;
-    ctx.beginPath();
-    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-    ctx.fillStyle = star.color;
-    ctx.fill();
-    return true;
-  });
-  requestAnimationFrame(animateStars);
-}
-animateStars();
 </script>
 </body>
 </html>
