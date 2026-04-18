@@ -1,58 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
-body{min-height:100vh;background:linear-gradient(135deg,#667eea,#764ba2);padding-top:70px}
-.navbar{position:fixed;top:0;width:100%;background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);padding:18px;text-align:center;z-index:100}
-.navbar a{margin:0 20px;text-decoration:none;color:#222;font-weight:bold}
-.card{background:rgba(255,255,255,0.92);width:380px;margin:40px auto;padding:30px;border-radius:20px;text-align:center}
-input,button{width:90%;padding:12px;margin:6px 0;border:none;border-radius:12px}
-button{background:#667eea;color:white;font-weight:bold;cursor:pointer}
-#messages{margin-top:20px}
-.msg{background:#f3f4f6;padding:10px;margin:6px 0;border-radius:10px;text-align:left}
-#canvas{position:fixed;top:0;left:0;z-index:-1}
-</style>
+    <meta charset="UTF-8">
+    <title>Star Particle</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        body{
+            background:#000;
+            overflow:hidden;
+        }
+        canvas{
+            display:block;
+        }
+    </style>
 </head>
 <body>
-
-<div class="navbar">
-<a href="#">Home</a>
-<a href="#">Profile</a>
-<a href="#">Messages</a>
-<a href="#">Settings</a>
-</div>
-
-<div class="card">
-<h3>Message Board</h3>
-<input id="input" placeholder="Your message...">
-<button onclick="sendMsg()">Send</button>
-<div id="messages"></div>
-</div>
-
 <canvas id="canvas"></canvas>
-
 <script>
-const ctx=document.getElementById("canvas").getContext("2d");
-function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
-resize();window.addEventListener("resize",resize);
-let particles=[];
-document.addEventListener("mousemove",(e)=>{particles.push({x:e.x,y:e.y,r:Math.random()*2+1})});
-function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle="rgba(255,255,255,0.7)";ctx.fill();p.r*=0.97;if(p.r<0.5)particles.splice(i,1)});requestAnimationFrame(draw)}
-draw();
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 
-function sendMsg(){
-let val=document.getElementById("input").value;
-if(!val)return;
-let div=document.createElement("div");
-div.className="msg";
-div.innerText=val;
-document.getElementById("messages").appendChild(div);
-document.getElementById("input").value="";
+let particles=[];
+class Particle{
+    constructor(x,y){
+        this.x=x;
+        this.y=y;
+        this.size=Math.random()*3+1;
+        this.speedX=Math.random()*3-1.5;
+        this.speedY=Math.random()*3-1.5;
+    }
+    update(){
+        this.x+=this.speedX;
+        this.y+=this.speedY;
+        if(this.size>0.1)this.size-=0.05;
+    }
+    draw(){
+        ctx.fillStyle="#fff";
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+        ctx.fill();
+    }
 }
+
+function create(e){
+    for(let i=0;i<10;i++){
+        particles.push(new Particle(e.x,e.y));
+    }
+}
+
+function animate(){
+    ctx.fillStyle="rgba(0,0,0,0.1)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    particles.forEach((p,i)=>{
+        p.update();
+        p.draw();
+        if(p.size<=0.1)particles.splice(i,1);
+    });
+    requestAnimationFrame(animate);
+}
+
+canvas.addEventListener("mousemove",create);
+animate();
 </script>
 </body>
 </html>
